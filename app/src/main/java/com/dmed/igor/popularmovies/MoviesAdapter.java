@@ -9,11 +9,21 @@ import android.widget.ImageView;
 
 import com.squareup.picasso.Picasso;
 
+import static com.dmed.igor.popularmovies.utilities.NetworkUtils.MOVIEDB_IMAGE_BASE_URL;
+
 public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesAdapterViewHolder> {
 
-    private String MOVIEDB_IMAGE_BASE_URL = "http://image.tmdb.org/t/p/w185/";
-
     private String[] mMoviesData;
+
+    private final GridItemClickListener mOnClickListener;
+
+    public interface GridItemClickListener {
+        void onGridItemClick(int clickedItemIndex);
+    }
+
+    public MoviesAdapter (GridItemClickListener listener) {
+        mOnClickListener = listener;
+    }
 
     @Override
     public MoviesAdapterViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -41,14 +51,22 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesAdap
         return mMoviesData.length;
     }
 
-    public class MoviesAdapterViewHolder extends RecyclerView.ViewHolder {
+    public class MoviesAdapterViewHolder extends RecyclerView.ViewHolder
+    implements View.OnClickListener {
         ImageView mMovieImageView;
 
         public MoviesAdapterViewHolder(View itemView) {
             super(itemView);
             mMovieImageView = itemView.findViewById(R.id.iv_movie_data);
+
+            itemView.setOnClickListener(this);
         }
 
+        @Override
+        public void onClick(View view) {
+            int clickedPosition = getAdapterPosition();
+            mOnClickListener.onGridItemClick(clickedPosition);
+        }
     }
 
     public void setMoviesData(String[] moviesData) {

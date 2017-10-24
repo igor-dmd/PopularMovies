@@ -17,11 +17,13 @@ public final class NetworkUtils {
 
     private static final String MOVIEDB_REQUEST_BASE_URL = "http://api.themoviedb.org/3/movie/";
 
+    public static final String MOVIEDB_IMAGE_BASE_URL = "http://image.tmdb.org/t/p/w185/";
+
     private static final String API_KEY_PARAM = "api_key";
 
-    public static URL buildUrl(String sortOption) {
+    public static URL buildUrl(String moviePath) {
         Uri builtUri = Uri.parse(MOVIEDB_REQUEST_BASE_URL).buildUpon()
-                .appendPath(sortOption)
+                .appendPath(moviePath)
                 .appendQueryParameter(API_KEY_PARAM, MOVIEDB_API_KEY)
                 .build();
 

@@ -1,5 +1,6 @@
 package com.dmed.igor.popularmovies;
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -22,7 +23,7 @@ import org.json.JSONObject;
 
 import java.net.URL;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements MoviesAdapter.GridItemClickListener {
 
     private RecyclerView mRecyclerView;
 
@@ -35,6 +36,10 @@ public class MainActivity extends AppCompatActivity {
     private static final String POPULARITY_SORT_OPTION = "popular";
 
     private static final String TOP_RATED_SORT_OPTION = "top_rated";
+
+    private String[] mPosterData;
+
+    private String[] mMovieIdData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
 
         mRecyclerView.setHasFixedSize(true);
 
-        mMoviesAdapter = new MoviesAdapter();
+        mMoviesAdapter = new MoviesAdapter(this);
 
         mRecyclerView.setAdapter(mMoviesAdapter);
 
@@ -78,6 +83,11 @@ public class MainActivity extends AppCompatActivity {
         mErrorMessageDisplay.setVisibility(View.VISIBLE);
     }
 
+    @Override
+    public void onGridItemClick(int clickedItemIndex) {
+        new FetchMovieDetailTask().execute(mMovieIdData[clickedItemIndex]);
+    }
+
     public class FetchMoviesTask extends AsyncTask<String, Void, String[]> {
 
         @Override
@@ -93,23 +103,26 @@ public class MainActivity extends AppCompatActivity {
             URL moviesRequestUrl = NetworkUtils.buildUrl(sortOption);
 
             try {
-                String jsonWeatherResponse = NetworkUtils
+                String jsonResponse = NetworkUtils
                         .getResponseFromHttpUrl(moviesRequestUrl);
 
-                String[] parsedMovieData = null;
+                mPosterData = null;
+                mMovieIdData = null;
 
-                JSONObject moviesJson = new JSONObject(jsonWeatherResponse);
+                JSONObject moviesJson = new JSONObject(jsonResponse);
                 JSONArray moviesList = moviesJson.getJSONArray("results");
 
-                parsedMovieData = new String[moviesList.length()];
+                mPosterData = new String[moviesList.length()];
+                mMovieIdData = new String[moviesList.length()];
 
                 for (int i = 0; i < moviesList.length(); i++) {
                     JSONObject movieObject = moviesList.getJSONObject(i);
 
-                    parsedMovieData[i] = movieObject.getString("poster_path");
+                    mPosterData[i] = movieObject.getString("poster_path");
+                    mMovieIdData[i] = movieObject.getString("id");
                 }
 
-                return parsedMovieData;
+                return mPosterData;
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -130,6 +143,38 @@ public class MainActivity extends AppCompatActivity {
         }
 
     }
+
+    public class FetchMovieDetailTask extends AsyncTask<String, Void, Void> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            mLoadingIndicator.setVisibility(View.VISIBLE);
+        }
+
+        @Override
+        protected Void doInBackground(String... strings) {
+
+            String movieId = strings[0];
+            URL movieDetailRequestUrl = NetworkUtils.buildUrl(movieId);
+
+            try {
+                String jsonResponse = NetworkUtils
+                        .getResponseFromHttpUrl(movieDetailRequestUrl);
+
+                JSONObject movieDetailJson = new JSONObject(jsonResponse);
+
+                Intent intent = new Intent(MainActivity.this, DetailActivity.class);
+                intent.putExtra("DETAIL_JSON", movieDetailJson.toString());
+                startActivity(intent);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
