@@ -6,5 +6,7 @@
     <string name="action_sort">Sort By</string>
     <string name="popularity_sort_option">Popularity</string>
     <string name="top_rated_sort_option">Top Rated</string>
+    <string name="rating">Rating:</string>
+    <string name="release_date">Release Date:</string>
 
 </resources>
