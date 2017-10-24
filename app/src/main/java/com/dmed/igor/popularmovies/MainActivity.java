@@ -1,6 +1,9 @@
 package com.dmed.igor.popularmovies;
 
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -68,7 +71,11 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Gri
     private void loadMoviesData(String sortOption) {
         showMoviesDataView();
 
-        new FetchMoviesTask().execute(sortOption);
+        if (isOnline()) {
+            new FetchMoviesTask().execute(sortOption);
+        } else {
+            showErrorMessage();
+        }
     }
 
     private void showMoviesDataView() {
@@ -83,9 +90,20 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Gri
         mErrorMessageDisplay.setVisibility(View.VISIBLE);
     }
 
+    public boolean isOnline() {
+        ConnectivityManager cm =
+                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        return netInfo != null && netInfo.isConnectedOrConnecting();
+    }
+
     @Override
     public void onGridItemClick(int clickedItemIndex) {
-        new FetchMovieDetailTask().execute(mMovieIdData[clickedItemIndex]);
+        if (isOnline()) {
+            new FetchMovieDetailTask().execute(mMovieIdData[clickedItemIndex]);
+        } else {
+            showErrorMessage();
+        }
     }
 
     public class FetchMoviesTask extends AsyncTask<String, Void, String[]> {
@@ -172,6 +190,11 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Gri
                 e.printStackTrace();
             }
             return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            mLoadingIndicator.setVisibility(View.INVISIBLE);
         }
     }
 
