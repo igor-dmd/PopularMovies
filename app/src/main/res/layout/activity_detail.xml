@@ -50,6 +50,7 @@
             android:id="@+id/tv_movie_rating"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
             android:textStyle="italic"
             />
 
@@ -72,6 +73,7 @@
             android:id="@+id/tv_movie_release_date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
             android:textStyle="italic"
             />
 
