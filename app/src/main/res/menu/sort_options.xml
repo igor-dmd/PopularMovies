@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/sort_option_popularity"
+        android:title="@string/popularity_sort_option" />
+    <item android:id="@+id/sort_option_top_rated"
+        android:title="@string/top_rated_sort_option" />
+</menu>

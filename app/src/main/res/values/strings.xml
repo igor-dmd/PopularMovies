@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">PopularMovies</string>
+    <string name="movie_poster_description">Image for Movie Poster</string>
+    <string name="error_message">Error on loading movie information.</string>
+
+    <string name="action_sort">Sort By</string>
+    <string name="popularity_sort_option">Popularity</string>
+    <string name="top_rated_sort_option">Top Rated</string>
+
+</resources>
